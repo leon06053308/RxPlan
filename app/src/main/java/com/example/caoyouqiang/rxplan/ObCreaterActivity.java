@@ -14,5 +14,14 @@ public class ObCreaterActivity extends BaseActivity {
 	@Override
 	public void onItemClick(View view, int position) {
 		super.onItemClick(view, position);
+
+		switch (position){
+			case 0:
+				break;
+			case 1:
+				break;
+			default:
+				break;
+		}
 	}
 }

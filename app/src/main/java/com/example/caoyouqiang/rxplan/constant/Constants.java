@@ -8,6 +8,8 @@ public class Constants {
 	private Constants(){}
 
 	public static final String OP_TAG = "op_tag";
+	public static final String OP_NAME = "op_name";
+
 
 	public enum OpEnum{
 		OP_CREATER(0), OP_CHANGE(1), OP_FILTER(2), OP_GROUP(3), OP_ERROE(4), OP_ASSIST(5),

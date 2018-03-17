@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.setTitle("RxPlan");
+		setSupportActionBar(toolbar);
+
 		mGridView = findViewById(R.id.main_grid_view);
 		mDatas = Arrays.asList(getResources().getStringArray(R.array.category));
 		mGridView.setAdapter(new GridAdapter(getApplication(), mDatas));
@@ -85,18 +91,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent intent = new Intent();
+		intent.putExtra(Constants.OP_NAME, mDatas.get(position));
 
 		switch (position){
 			case 0:
 				intent.setClass(this, ObCreaterActivity.class);
 				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_CREATER);
-
 				startActivity(intent);
 				break;
 			case 1:
 				intent.setClass(this, ObCreaterActivity.class);
 				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_CHANGE);
-
 				startActivity(intent);
 				break;
 			case 2:

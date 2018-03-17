@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,15 +25,19 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 	protected Constants.OpEnum mOpValue;
 	protected List<String> mOpList = new ArrayList<>();
 
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_base);
 
+		Intent intent = getIntent();
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.setTitle(intent.getStringExtra(Constants.OP_NAME));
+		setSupportActionBar(toolbar);
+
 		mBaseRv = findViewById(R.id.base_rv);
-		assignValue(getIntent());
+		assignValue(intent);
 
 		MyAdapter adapter = new MyAdapter(this, mOpList);
 		adapter.setItemClickListener(this);

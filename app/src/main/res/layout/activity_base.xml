@@ -7,9 +7,16 @@
     android:background="@android:color/darker_gray"
     tools:context="com.example.caoyouqiang.rxplan.BaseActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/base_rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar">
     </android.support.v7.widget.RecyclerView>
 </RelativeLayout>
