@@ -18,6 +18,16 @@
         </activity>
         <activity android:name=".OpAssistActivity" />
         <activity android:name=".BaseActivity"></activity>
+        <activity android:name=".ObCreaterActivity"></activity>
+        <activity android:name=".OpChangeActivity"></activity>
+        <activity android:name=".OpConditionActivity"></activity>
+        <activity android:name=".OpConnectionActivity"></activity>
+        <activity android:name=".OpFilterActivity"></activity>
+        <activity android:name=".OpGroupActivity"></activity>
+        <activity android:name=".OpMathActivity"></activity>
+        <activity android:name=".OpTransferActivity"></activity>
+
     </application>
+
 
 </manifest>

@@ -13,6 +13,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.example.caoyouqiang.rxplan.constant.Constants;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		mGridView = findViewById(R.id.main_grid_view);
 		mDatas = Arrays.asList(getResources().getStringArray(R.array.category));
 		mGridView.setAdapter(new GridAdapter(getApplication(), mDatas));
+		mGridView.setOnItemClickListener(this);
 	}
 
 	class GridAdapter extends BaseAdapter{
@@ -81,36 +84,60 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Intent intent = new Intent();
+
 		switch (position){
 			case 0:
-				startActivity(new Intent(this, ObCreaterActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_CREATER);
+
+				startActivity(intent);
 				break;
 			case 1:
-				startActivity(new Intent(this, OpChangeActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_CHANGE);
+
+				startActivity(intent);
 				break;
 			case 2:
-				startActivity(new Intent(this, OpFilterActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_FILTER);
+				startActivity(intent);
 				break;
 			case 3:
-				startActivity(new Intent(this, OpGroupActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_GROUP);
+				startActivity(intent);
 				break;
 			case 4:
-				startActivity(new Intent(this, ErrorHandleActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_ERROE);
+				startActivity(intent);
 				break;
 			case 5:
-				startActivity(new Intent(this, OpAssistActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_ASSIST);
+				startActivity(intent);
 				break;
 			case 6:
-				startActivity(new Intent(this, OpConditionActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_CONDITION);
+				startActivity(intent);
 				break;
 			case 7:
-				startActivity(new Intent(this, OpMathActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_MATH);
+				startActivity(intent);
 				break;
 			case 8:
-				startActivity(new Intent(this, OpConnectionActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_CONNECT);
+				startActivity(intent);
 				break;
 			case 9:
-				startActivity(new Intent(this, OpTransferActivity.class));
+				intent.setClass(this, ObCreaterActivity.class);
+				intent.putExtra(Constants.OP_TAG, Constants.OpEnum.OP_TRANSFER);
+				startActivity(intent);
 				break;
 			default:
 				break;
