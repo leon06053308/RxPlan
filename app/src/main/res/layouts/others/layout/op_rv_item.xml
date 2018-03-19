@@ -15,6 +15,6 @@
         android:layout_height="1dp"
         android:background="@android:color/background_dark"
         android:layout_width="match_parent"
-        android:layout_below="@+id/tv_op_title"
+        android:layout_alignParentBottom="true"
         />
 </RelativeLayout>

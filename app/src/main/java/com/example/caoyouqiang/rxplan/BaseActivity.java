@@ -2,6 +2,9 @@ package com.example.caoyouqiang.rxplan;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,6 +28,7 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 	protected RecyclerView mBaseRv;
 	protected Constants.OpEnum mOpValue;
 	protected List<String> mOpList = new ArrayList<>();
+	protected ViewGroup mContainer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,9 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		toolbar.setTitle(intent.getStringExtra(Constants.OP_NAME));
 		setSupportActionBar(toolbar);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+		mContainer = findViewById(R.id.fm_container);
 
 		mBaseRv = findViewById(R.id.base_rv);
 		assignValue(intent);
@@ -47,6 +55,7 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 
 	@Override
 	public void onItemClick(View view, int position) {
+		mBaseRv.setVisibility(View.GONE);
 	}
 
 	private void assignValue(Intent intent){
@@ -142,5 +151,28 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 				tvOpName = itemView.findViewById(R.id.tv_op_title);
 			}
 		}
+	}
+
+	public void pushFragment(Fragment fragment) {
+		FragmentManager fm = getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.replace(R.id.fm_container, fragment);
+		ft.addToBackStack(null);
+		ft.commit();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				if (mBaseRv.isShown()){
+					finish();
+				}else {
+					getSupportFragmentManager().popBackStack();
+					mBaseRv.setVisibility(View.VISIBLE);
+				}
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
