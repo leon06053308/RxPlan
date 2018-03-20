@@ -47,6 +47,7 @@ public class CreaterFragment extends BaseFragment implements View.OnClickListene
 		mTv = view.findViewById(R.id.textView);
 		mStart = view.findViewById(R.id.btn_start);
 		mStart.setOnClickListener(this);
+		mStart.setText("Create");
 		mComDisposable = new CompositeDisposable();
 		return view;
 	}

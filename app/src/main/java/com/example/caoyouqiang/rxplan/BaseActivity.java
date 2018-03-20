@@ -165,14 +165,23 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				if (mBaseRv.isShown()){
-					finish();
-				}else {
-					getSupportFragmentManager().popBackStack();
-					mBaseRv.setVisibility(View.VISIBLE);
-				}
+				dealBackEvent();
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onBackPressed() {
+		dealBackEvent();
+	}
+
+	private void dealBackEvent(){
+		if (mBaseRv.isShown()){
+			finish();
+		}else {
+			getSupportFragmentManager().popBackStack();
+			mBaseRv.setVisibility(View.VISIBLE);
+		}
 	}
 }

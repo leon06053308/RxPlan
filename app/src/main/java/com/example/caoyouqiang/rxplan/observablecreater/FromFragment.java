@@ -1,6 +1,7 @@
 package com.example.caoyouqiang.rxplan.observablecreater;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,10 +10,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,46 +26,47 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.observers.EmptyCompletableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by caoyouqiang on 18-3-19.
  */
-
-public class ENTFragment extends BaseFragment {
-	private Observable<String> mEmptyObservable;
-	private Observable<String> mNeverObservable;
-	private Observable<String> mErrorObservable;
+/*
+* 可以转换callable,future,array,iterable,publish
+* */
+public class FromFragment extends Fragment {
+	@BindView(R.id.textView)
+	TextView mTv;
+	@BindView(R.id.btn_start)
+	Button mStartBtn;
+	Unbinder mUnbinder;
+	private Observable<String> mFromObservable;
 	private Observer<String> mObserver;
-	private Unbinder mUnbinder;
 
-	/*@BindView(R.id.btn_empty) Button mBtnEmpty;
-	@BindView(R.id.btn_never) Button mBtnNever;*/
-	@BindView(R.id.result_tv) TextView mTv;
-
-	public ENTFragment(){
+	public FromFragment(){
 
 	}
 
-	public static ENTFragment newInstance() {
-		ENTFragment fragment = new ENTFragment();
+	public static FromFragment newInstance() {
+		FromFragment fragment = new FromFragment();
 		return fragment;
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		mEmptyObservable = Observable.empty();
-		mNeverObservable = Observable.never();
-		mErrorObservable = Observable.error(new Callable<Throwable>() {
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		Future<String> future = executorService.submit(new Callable<String>() {
 			@Override
-			public Throwable call() throws Exception {
-				Throwable ex = new NullPointerException("null exception");
-				return ex;
+			public String call() throws Exception {
+				Thread.sleep(5000);
+				return "return OK";
 			}
 		});
+		mFromObservable = Observable.fromFuture(future, 5, TimeUnit.SECONDS);
+
 		mObserver = new Observer<String>() {
 			@Override
 			public void onSubscribe(Disposable d) {
@@ -94,8 +101,9 @@ public class ENTFragment extends BaseFragment {
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.ent_fragment_layout, container, false);
-		mUnbinder = ButterKnife.bind(this,view);
+		View view = inflater.inflate(R.layout.creater_fragment_layout, container, false);
+		mUnbinder = ButterKnife.bind(this, view);
+		mStartBtn.setText("From");
 		return view;
 	}
 
@@ -115,18 +123,10 @@ public class ENTFragment extends BaseFragment {
 		mUnbinder.unbind();
 	}
 
-	@OnClick(R.id.btn_empty)
-	void emptyClick(){
-		mEmptyObservable.subscribe(mObserver);
-	}
-
-	@OnClick(R.id.btn_never)
-	void neverClick(){
-		mNeverObservable.subscribe(mObserver);
-	}
-
-	@OnClick(R.id.btn_throw)
-	void errorClick(){
-		mErrorObservable.subscribe(mObserver);
+	@OnClick(R.id.btn_start)
+	void startClick(){
+		mFromObservable.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(mObserver);
 	}
 }
