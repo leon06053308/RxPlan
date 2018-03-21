@@ -1,9 +1,7 @@
-package com.example.caoyouqiang.rxplan.observablecreater;
+package com.example.caoyouqiang.rxplan.operationchange;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,60 +11,61 @@ import android.widget.TextView;
 import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.functions.Function;
 
 /**
  * Created by caoyouqiang on 18-3-19.
+ * 将发射出去的数据转换成一个observable.
+ * 应用场景:假如发射出去的数据不是需要的类型,比如发射的是long类型,但是实际需要的是string类型
  */
-/*
-* 可以转换callable,future,array,iterable,publish
-* */
-public class FromFragment extends BaseFragment {
+
+public class FlatMapFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<String> mFromObservable;
+	private Observable<String> mObservable;
 	private Observer<String> mObserver;
 
-	public FromFragment(){
+	public FlatMapFragment(){
 
 	}
 
-	public static FromFragment newInstance() {
-		FromFragment fragment = new FromFragment();
+	public static FlatMapFragment newInstance() {
+		FlatMapFragment fragment = new FlatMapFragment();
 		return fragment;
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		Future<String> future = executorService.submit(new Callable<String>() {
+
+		mObservable = Observable.timer(3, TimeUnit.SECONDS).flatMap(new Function<Long, ObservableSource<? extends String>>() {
 			@Override
-			public String call() throws Exception {
-				Thread.sleep(5000);
-				return "return OK";
+			public ObservableSource<? extends String> apply(final Long aLong) throws Exception {
+				return Observable.create(new ObservableOnSubscribe<String>() {
+					@Override
+					public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+						emitter.onNext(String.valueOf(aLong));
+						emitter.onComplete();
+					}
+				});
 			}
 		});
-		mFromObservable = Observable.fromFuture(future, 5, TimeUnit.SECONDS);
 
 		mObserver = new Observer<String>() {
 			@Override
@@ -104,7 +103,7 @@ public class FromFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.creater_fragment_layout, container, false);
 		mUnbinder = ButterKnife.bind(this, view);
-		mStartBtn.setText("From");
+		mStartBtn.setText("FlatMap");
 		return view;
 	}
 
@@ -126,8 +125,6 @@ public class FromFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
-		mFromObservable.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(mObserver);
+		mObservable.observeOn(AndroidSchedulers.mainThread()).subscribe(mObserver);
 	}
 }

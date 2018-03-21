@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
 import java.util.concurrent.TimeUnit;
@@ -19,13 +20,15 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by caoyouqiang on 18-3-19.
  * timer()只是用来创建一个Observable，并延迟发送一次的操作符，timer()并不会按周期执行
  */
 
-public class TimerFragment extends Fragment {
+public class TimerFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)
@@ -47,6 +50,35 @@ public class TimerFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mObservable = Observable.timer(3, TimeUnit.SECONDS);
+		mObserver = new Observer<Long>() {
+			@Override
+			public void onSubscribe(Disposable d) {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("onSubscribe..." + "\n");
+				mTv.setText(stringBuilder);
+			}
+
+			@Override
+			public void onNext(Long aLong) {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("onNext--" + aLong + "\n");
+				mTv.setText(stringBuilder);
+			}
+
+			@Override
+			public void onError(Throwable e) {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("onError:" + e.getMessage() + "\n");
+				mTv.setText(stringBuilder);
+			}
+
+			@Override
+			public void onComplete() {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("onComplete..." + "\n");
+				mTv.setText(stringBuilder);
+			}
+		};
 	}
 
 	@Nullable
@@ -76,6 +108,6 @@ public class TimerFragment extends Fragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
-
+		mObservable.observeOn(AndroidSchedulers.mainThread()).subscribe(mObserver);
 	}
 }

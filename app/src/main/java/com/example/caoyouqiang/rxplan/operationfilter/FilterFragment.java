@@ -1,9 +1,7 @@
-package com.example.caoyouqiang.rxplan.observablecreater;
+package com.example.caoyouqiang.rxplan.operationfilter;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +11,7 @@ import android.widget.TextView;
 import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,48 +19,43 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.functions.Predicate;
 
 /**
  * Created by caoyouqiang on 18-3-19.
  */
-/*
-* 可以转换callable,future,array,iterable,publish
-* */
-public class FromFragment extends BaseFragment {
+
+public class FilterFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<String> mFromObservable;
-	private Observer<String> mObserver;
+	private Observable<Long> mObservable;
+	private Observer<Long> mObserver;
 
-	public FromFragment(){
+	public FilterFragment(){
 
 	}
 
-	public static FromFragment newInstance() {
-		FromFragment fragment = new FromFragment();
+	public static FilterFragment newInstance() {
+		FilterFragment fragment = new FilterFragment();
 		return fragment;
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		Future<String> future = executorService.submit(new Callable<String>() {
+		Long[] longs = new Long[]{20L,15L,63L,23L,12L,8L,9L};
+		mObservable = Observable.fromIterable(Arrays.asList(longs)).filter(new Predicate<Long>() {
 			@Override
-			public String call() throws Exception {
-				Thread.sleep(5000);
-				return "return OK";
+			public boolean test(Long aLong) throws Exception {
+				return aLong > 12L;
 			}
 		});
-		mFromObservable = Observable.fromFuture(future, 5, TimeUnit.SECONDS);
 
-		mObserver = new Observer<String>() {
+		mObserver = new Observer<Long>() {
 			@Override
 			public void onSubscribe(Disposable d) {
 				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
@@ -77,7 +64,7 @@ public class FromFragment extends BaseFragment {
 			}
 
 			@Override
-			public void onNext(String s) {
+			public void onNext(Long s) {
 				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
 				stringBuilder.append("onNext--" + s + "\n");
 				mTv.setText(stringBuilder);
@@ -104,7 +91,7 @@ public class FromFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.creater_fragment_layout, container, false);
 		mUnbinder = ButterKnife.bind(this, view);
-		mStartBtn.setText("From");
+		mStartBtn.setText("Filter");
 		return view;
 	}
 
@@ -126,8 +113,6 @@ public class FromFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
-		mFromObservable.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(mObserver);
+		mObservable.subscribe(mObserver);
 	}
 }

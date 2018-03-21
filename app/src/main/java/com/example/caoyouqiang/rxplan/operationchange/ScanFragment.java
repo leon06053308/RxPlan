@@ -1,9 +1,7 @@
-package com.example.caoyouqiang.rxplan.observablecreater;
+package com.example.caoyouqiang.rxplan.operationchange;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,62 +11,51 @@ import android.widget.TextView;
 import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.functions.BiFunction;
 
 /**
  * Created by caoyouqiang on 18-3-19.
+ * Scan操作符对原始Observable发射的第一项数据应用一个函数，然后将那个函数的结果作为自己的第一项数据发射。
+ * 它将函数的结果同第二项数据一起填充给这个函数来产生它自己的第二项数据。它持续进行这个过程来产生剩余的数据序列
  */
-/*
-* 可以转换callable,future,array,iterable,publish
-* */
-public class FromFragment extends BaseFragment {
+
+public class ScanFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<String> mFromObservable;
-	private Observer<String> mObserver;
+	private Observable<Integer> mObservable;
+	private Observer<Integer> mObserver;
 
-	public FromFragment(){
+	public ScanFragment(){
 
 	}
 
-	public static FromFragment newInstance() {
-		FromFragment fragment = new FromFragment();
+	public static ScanFragment newInstance() {
+		ScanFragment fragment = new ScanFragment();
 		return fragment;
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		Future<String> future = executorService.submit(new Callable<String>() {
+
+		mObservable = Observable.just(1,2,2,5,6).scan(10, new BiFunction<Integer, Integer, Integer>() {
 			@Override
-			public String call() throws Exception {
-				Thread.sleep(5000);
-				return "return OK";
+			public Integer apply(Integer integer, Integer integer2) throws Exception {
+				return integer + integer2;
 			}
 		});
-		mFromObservable = Observable.fromFuture(future, 5, TimeUnit.SECONDS);
 
-		mObserver = new Observer<String>() {
+		mObserver = new Observer<Integer>() {
 			@Override
 			public void onSubscribe(Disposable d) {
 				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
@@ -77,7 +64,7 @@ public class FromFragment extends BaseFragment {
 			}
 
 			@Override
-			public void onNext(String s) {
+			public void onNext(Integer s) {
 				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
 				stringBuilder.append("onNext--" + s + "\n");
 				mTv.setText(stringBuilder);
@@ -104,7 +91,7 @@ public class FromFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.creater_fragment_layout, container, false);
 		mUnbinder = ButterKnife.bind(this, view);
-		mStartBtn.setText("From");
+		mStartBtn.setText("Scan");
 		return view;
 	}
 
@@ -126,8 +113,6 @@ public class FromFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
-		mFromObservable.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(mObserver);
+		mObservable.subscribe(mObserver);
 	}
 }

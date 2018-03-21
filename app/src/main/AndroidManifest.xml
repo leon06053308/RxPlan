@@ -27,6 +27,7 @@
         <activity android:name=".OpGroupActivity"></activity>
         <activity android:name=".OpMathActivity"></activity>
         <activity android:name=".OpTransferActivity"></activity>
+        <activity android:name=".ErrorHandleActivity"></activity>
 
     </application>
 

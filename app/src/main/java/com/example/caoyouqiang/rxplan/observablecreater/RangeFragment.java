@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
 import butterknife.BindView;
@@ -25,7 +26,7 @@ import io.reactivex.disposables.Disposable;
 /*
 * 创建一个发射特定整数序列的Observable
 * */
-public class RangeFragment extends Fragment {
+public class RangeFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)

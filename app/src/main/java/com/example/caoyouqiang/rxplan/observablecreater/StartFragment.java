@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
 import java.util.Arrays;
@@ -26,7 +27,7 @@ import io.reactivex.disposables.Disposable;
  * 注意,此处start事例并非Start原意,暂时未在rxjava中找到相关操作符
  * 原意:返回一个Observable，它发射一个类似于函数声明的值
  */
-public class StartFragment extends Fragment {
+public class StartFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)

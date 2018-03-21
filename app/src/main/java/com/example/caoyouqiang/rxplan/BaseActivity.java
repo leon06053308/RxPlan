@@ -29,6 +29,8 @@ public class BaseActivity extends AppCompatActivity implements OnItemClickListen
 	protected Constants.OpEnum mOpValue;
 	protected List<String> mOpList = new ArrayList<>();
 	protected ViewGroup mContainer;
+	protected 	Fragment mInnerFragment;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
