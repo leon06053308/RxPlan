@@ -17,9 +17,12 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by caoyouqiang on 18-3-19.
+ * zip 通过一个函数将多个Observable发送的事件结合到一起，然后发送这些组合到一起的事件. 它按照严格的顺序应用这个函数。它只发射与发射数据项最少的那个Observable一样多的数据。
  */
 
 public class ZipFragment extends BaseFragment {
@@ -28,8 +31,8 @@ public class ZipFragment extends BaseFragment {
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<Long> mObservable;
-	private Observer<Long> mObserver;
+	private Observable<String> mObservable;
+	private Consumer<String> mObserver;
 
 	public ZipFragment(){
 
@@ -43,6 +46,25 @@ public class ZipFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		Observable<Integer> observable1 = Observable.just(1, 2, 3, 4);
+		Observable<Integer> observable2 = Observable.just(1, 2, 3);
+		mObservable = Observable.zip(observable1, observable2, new BiFunction<Integer, Integer, String>() {
+			@Override
+			public String apply(Integer integer, Integer integer2) throws Exception {
+				return integer + integer2 + "";
+			}
+		});
+
+
+		mObserver = new Consumer<String>() {
+			@Override
+			public void accept(String integer) throws Exception {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("accept--" + integer + "\n");
+				mTv.setText(stringBuilder);
+			}
+		};
 	}
 
 	@Nullable
@@ -72,5 +94,6 @@ public class ZipFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
+		mObservable.subscribe(mObserver);
 	}
 }

@@ -17,6 +17,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by caoyouqiang on 18-3-19.
@@ -28,8 +29,8 @@ public class StartWithFragment extends BaseFragment {
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<Long> mObservable;
-	private Observer<Long> mObserver;
+	private Observable<Integer> mObservable;
+	private Consumer<Integer> mObserver;
 
 	public StartWithFragment(){
 
@@ -43,6 +44,15 @@ public class StartWithFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mObservable = Observable.just(1,2,3).startWith(0);
+		mObserver = new Consumer<Integer>() {
+			@Override
+			public void accept(Integer integer) throws Exception {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("accept--" + integer + "\n");
+				mTv.setText(stringBuilder);
+			}
+		};
 	}
 
 	@Nullable
@@ -72,5 +82,6 @@ public class StartWithFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
+		mObservable.subscribe(mObserver);
 	}
 }

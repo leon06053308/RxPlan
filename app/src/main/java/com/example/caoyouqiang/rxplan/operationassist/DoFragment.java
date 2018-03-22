@@ -1,4 +1,4 @@
-package com.example.caoyouqiang.rxplan.operationgroup;
+package com.example.caoyouqiang.rxplan.operationassist;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,42 +22,35 @@ import io.reactivex.Observer;
  * Created by caoyouqiang on 18-3-19.
  */
 
-public class ATWFragment extends BaseFragment {
+public class DoFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
-	@BindView(R.id.btn_empty)
-	Button mAndBtn;
-	@BindView(R.id.btn_never)
-	Button mThenBtn;
-	@BindView(R.id.btn_throw)
-	Button mWhenBtn;
+	@BindView(R.id.btn_start)
+	Button mStartBtn;
 	Unbinder mUnbinder;
 	private Observable<Long> mObservable;
 	private Observer<Long> mObserver;
 
-	public ATWFragment(){
+	public DoFragment(){
 
 	}
 
-	public static ATWFragment newInstance() {
-		ATWFragment fragment = new ATWFragment();
+	public static DoFragment newInstance() {
+		DoFragment fragment = new DoFragment();
 		return fragment;
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 	}
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.ent_fragment_layout, container, false);
+		View view = inflater.inflate(R.layout.creater_fragment_layout, container, false);
 		mUnbinder = ButterKnife.bind(this, view);
-		mAndBtn.setText("And");
-		mThenBtn.setText("Then");
-		mWhenBtn.setText("When");
+		mStartBtn.setText("Do");
 		return view;
 	}
 

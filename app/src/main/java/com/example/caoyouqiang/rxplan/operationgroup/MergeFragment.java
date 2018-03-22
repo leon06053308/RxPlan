@@ -17,6 +17,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by caoyouqiang on 18-3-19.
@@ -28,8 +31,8 @@ public class MergeFragment extends BaseFragment {
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<Long> mObservable;
-	private Observer<Long> mObserver;
+	private Observable<Integer> mObservable;
+	private Consumer<Integer> mObserver;
 
 	public MergeFragment(){
 
@@ -43,6 +46,19 @@ public class MergeFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		Observable<Integer> o1 = Observable.just(1, 2, 3).subscribeOn(Schedulers.io());
+		Observable<Integer> o2 = Observable.just(4, 5, 6).subscribeOn(Schedulers.newThread());
+		mObservable = Observable.merge(o1, o2);
+
+		mObserver = new Consumer<Integer>() {
+			@Override
+			public void accept(Integer integer) throws Exception {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("accept--" + integer + "\n");
+				mTv.setText(stringBuilder);
+			}
+		};
 	}
 
 	@Nullable
@@ -72,5 +88,8 @@ public class MergeFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
+		mObservable
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(mObserver);
 	}
 }
