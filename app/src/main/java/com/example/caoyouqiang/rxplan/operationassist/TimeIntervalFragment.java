@@ -11,25 +11,36 @@ import android.widget.TextView;
 import com.example.caoyouqiang.rxplan.BaseFragment;
 import com.example.caoyouqiang.rxplan.R;
 
+import java.sql.Time;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.Timed;
 
 /**
  * Created by caoyouqiang on 18-3-19.
  */
-
+/*
+* 转换为时间Timed，默认时间单位为毫秒
+* 将一个发射数据的Observable转换为发射那些数据发射时间间隔的Observable
+* */
 public class TimeIntervalFragment extends BaseFragment {
 	@BindView(R.id.textView)
 	TextView mTv;
 	@BindView(R.id.btn_start)
 	Button mStartBtn;
 	Unbinder mUnbinder;
-	private Observable<Long> mObservable;
-	private Observer<Long> mObserver;
+	private Observable<Timed<Integer>> mObservable;
+	private Consumer<Timed<Integer>> mObserver;
 
 	public TimeIntervalFragment(){
 
@@ -43,6 +54,27 @@ public class TimeIntervalFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mObservable = Observable.create(new ObservableOnSubscribe<Integer>() {
+			@Override
+			public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+				for (int i=0; i<3; i++){
+					emitter.onNext(i);
+					Thread.sleep(1000);
+				}
+				emitter.onComplete();
+			}
+		}).timeInterval();
+
+		mObserver = new Consumer<Timed<Integer>>() {
+			@Override
+			public void accept(Timed<Integer> integerTimed) throws Exception {
+				StringBuilder stringBuilder = new StringBuilder(mTv.getText());
+				stringBuilder.append("accept--" + integerTimed.value() + " time--" + integerTimed.time() + "\n");
+				mTv.setText(stringBuilder);
+			}
+
+		};
 	}
 
 	@Nullable
@@ -72,5 +104,6 @@ public class TimeIntervalFragment extends BaseFragment {
 
 	@OnClick(R.id.btn_start)
 	void startClick(){
+		mObservable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(mObserver);
 	}
 }

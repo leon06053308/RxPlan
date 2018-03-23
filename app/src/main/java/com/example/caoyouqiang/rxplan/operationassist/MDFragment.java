@@ -27,7 +27,9 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by caoyouqiang on 18-3-19.
  */
-
+/*
+* materialize把 被观察者Observable转换为Notification通知对象。dematerialize相反了。 注意用了materialize之后，onNext会回调多了一个数据，因为onComplete也回调到这里了。
+* */
 public class MDFragment extends BaseFragment {
 	@BindView(R.id.result_tv)
 	TextView mTv;
